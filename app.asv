@@ -1,0 +1,7 @@
+id = -1;
+while id < 1 || id > 943
+    id = input("Insert User ID (1 to 943): ")
+end
+
+udata = load("u.data")
+dic = readcell('films.txt', 'Delimiter', '')

@@ -1,0 +1,3 @@
+function [filmes] = movies(id, listaFilmes)
+    filmes = listaFilmes{id};
+end
