@@ -1,0 +1,11 @@
+function [filmes] = moviesFeedback(listaFilmes, bloomFilter)
+    name = "";
+    while name == ""
+        name = input("Enter the movie name: ", 's');
+    end
+    bloomFilter = BloomFilter(10000,1);
+
+    for 
+
+    filmes = 0;
+end

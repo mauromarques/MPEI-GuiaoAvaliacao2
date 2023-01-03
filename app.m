@@ -17,6 +17,14 @@ end
 
 dic = readcell('films.txt', 'Delimiter', '\t');
 
+udata2 = load("u.data");
+u2 = udata2(1:end, 2:3); clear udata;
+bloomFilter = BloomFilter(10000,1);
+u2 = u2(i,2) >= 3;
+for i = 1:length(u2)
+    bloomFilter.insert(u2(i,1))
+end
+
 option = 1;
 while option ~= 5
     disp("1 - Your movies")
@@ -34,7 +42,7 @@ while option ~= 5
         case 3
             disp("3")
         case 4
-            disp("4")
+            moviesFeedback(dic, bloomFilter)
     end
 end
 
