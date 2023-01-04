@@ -19,18 +19,55 @@ while option ~= 5
         case 1
             movies(id, data.C, data.dic)
         case 2
-            similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id)
+            similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
             likelyUsers = zeros(1,2);
             likelyUsers(1,1) = similarities(1, length(similarities));
             likelyUsers(1,2) = similarities(1, length(similarities)-1);
-            movies1 = data.C(likelyUsers(1,1));
-            movies2 = data.C(likelyUsers(1,2));
-            for i = 1:length(movies2)
-                movies1(length(movies2) + 1)
+            movies1 = cell2mat(data.C(likelyUsers(1,1)));
+            movies2 = cell2mat(data.C(likelyUsers(1,2)));
+            movies3 = cell2mat(data.C(id));
+            moviesToReccommend = unique(cat(1, movies2, movies1));
+            moviesToReccommend = setdiff(movies3, moviesToReccommend);
+            answer = cell(1,length(moviesToReccommend));
+            for i = 1:length(moviesToReccommend)
+                name = data.dic{moviesToReccommend(i)};
+                answer{i} = name;
             end
-            
+            answer
         case 3
-            disp("3")
+            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,100);
+            evaluatedMovies = data.C{id};
+            %get [row number, collumn number] of the elements that have
+            %distance < 0.8
+            [id1, id2, ~] = find(genreDistance < 0.8 & genreDistance > 0);
+            %concatenate them in a single matrix (easier to use)
+            t = [id1 id2];
+            %first collumn of t should be the movies already watched by the
+            %user
+            [~,id1,~] = intersect(t(:,1),evaluatedMovies);
+            %remove the lines that contain movies (in collumn 1) that the 
+            %user hasnt watched
+            t = t(id1,:);
+            %second collumn should only have movies the users 
+            [~,id2,~] = intersect(t(:,2),evaluatedMovies);
+            t(id2,:) = [];
+            ut = unique(t(:,2));            
+            c = histcounts(t(:,2),ut);
+            clear id1 id2 t
+            m = max(c);
+            toRecommend = ut(c == m);
+            if length(toRecommend) == 1
+                c(c == m) = 0;
+                m = max(c);
+                toRecommend = [toRecommend ut(c == m)];
+            end
+
+            toRecommend = toRecommend(1:2);
+            fprintf("\nMovies you might like:\n")
+            for i=1:length(toRecommend)
+                disp(data.dic{toRecommend(i),1});
+            end
+            fprintf("\n");     
         case 4
             moviesFeedback(dic, bloomFilter)
     end

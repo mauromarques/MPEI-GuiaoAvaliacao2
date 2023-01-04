@@ -35,7 +35,45 @@ while option ~= 5
             end
             answer
         case 3
-            disp("3")
+            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,100);
+            evaluatedMovies = data.C{id};
+            %get [row number, collumn number] of the elements that have
+            %distance < 0.8
+            [id1, id2, ~] = find(genreDistance < 0.8 & genreDistance > 0);
+            %concatenate them in a single matrix (easier to use)
+            t = [id1 id2];
+            %first collumn of t should be the movies already watched by the
+            %user
+            [~,id1,~] = intersect(t(:,1),evaluatedMovies);
+            %remove the lines that contain movies (in collumn 1) that the 
+            %user hasnt watched
+            t = t(id1,:);
+            %second collumn should only have movies the user hasnt watched
+            [~,id2,~] = intersect(t(:,2),evaluatedMovies);
+            %remove the lines that contain movies that the user has watched
+            t(id2,:) = [];
+            
+            ut = unique(t(:,2));
+
+            %how many times each element appears in t
+            c = histcounts(t(:,2),ut);
+            clear id1 id2 t
+            %save the id of the movie(s) that appear most often
+            m = max(c);
+            toRecommend = ut(c == m);
+            if length(toRecommend) == 1
+                c(c == m) = 0;
+                m = max(c);
+                toRecommend = [toRecommend ut(c == m)];
+            end
+
+            %print the name of the movies to recommend
+            toRecommend = toRecommend(1:2);
+            fprintf("\nMovies you might like:\n")
+            for i=1:length(toRecommend)
+                disp(data.dic{toRecommend(i),1});
+            end
+            fprintf("\n");     
         case 4
             moviesFeedback(dic, bloomFilter)
     end
