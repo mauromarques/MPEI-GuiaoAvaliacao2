@@ -35,6 +35,6 @@ hf = initHashFuncs(N,nhf);
 
 moviesGenreSignaturesMatrix = calculateSignaturesMatrix(moviesGenre,hf,nhf);
 moviesNameSignaturesMatrix = calculateSignaturesMatrix(moviesName,hf,nhf);
-userMoviesSignaturesMatrix = calculateSignaturesMatrix(C,hf,nhf);
+userMoviesSignaturesMatrix = calculateSignaturesMatrix(C,hf,nhf)
 
 save data.mat userMoviesSignaturesMatrix moviesGenreSignaturesMatrix bloomFilter C dic moviesNameSignaturesMatrix

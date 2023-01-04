@@ -1,0 +1,37 @@
+function distance = jaccard(signatures, id)
+    %{
+    % Calculate the size of the intersection of the two sets
+    intersection = intersect(set1, set2);
+    intersection_size = length(intersection);
+    
+    % Calculate the size of the union of the two sets
+    uniona = union(set1, set2);
+    union_size = length(uniona);
+    
+    % Calculate the Jaccard distance
+    distance = 1 - (intersection_size / union_size);
+    %}
+
+    % Initialize a counter to track the number of equal MinHash values
+    counter = 0;
+    signatures1 = signatures(id)
+    nhf = height(signatures1);
+    
+    % Iterate over the users
+    for j = 1 : length(signatures)
+        % Iterate over the rows of the signature matrices
+        signatures2 = signatures(j)
+        for i = 1 : nhf
+            if j~= id:
+                % Compare the MinHash values for the two sets
+                if signatures1(i) == signatures2(i)
+                    % If the values are equal, increment the counter
+                    counter = counter + 1;
+                end
+            end
+        end
+    end
+    
+    % Calculate the Jaccard similarity
+    similarity = counter / nhf;
+end

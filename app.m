@@ -17,9 +17,23 @@ while option ~= 5
 
     switch option
         case 1
-            movies(id, C, dic)
+            movies(id, data.C, data.dic)
         case 2
-            disp("2")
+            similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
+            likelyUsers = zeros(1,2);
+            likelyUsers(1,1) = similarities(1, length(similarities));
+            likelyUsers(1,2) = similarities(1, length(similarities)-1);
+            movies1 = cell2mat(data.C(likelyUsers(1,1)));
+            movies2 = cell2mat(data.C(likelyUsers(1,2)));
+            movies3 = cell2mat(data.C(id));
+            moviesToReccommend = unique(cat(1, movies2, movies1));
+            moviesToReccommend = setdiff(movies3, moviesToReccommend);
+            answer = cell(1,length(moviesToReccommend));
+            for i = 1:length(moviesToReccommend)
+                name = data.dic{moviesToReccommend(i)};
+                answer{i} = name;
+            end
+            answer
         case 3
             disp("3")
         case 4
