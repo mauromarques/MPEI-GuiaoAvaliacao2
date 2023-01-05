@@ -17,8 +17,14 @@ while option ~= 5
 
     switch option
         case 1
-            movies(id, data.C, data.dic)
+            mov = movies(id, data.C, data.dic);
+            fprintf("\nMovies you watched:\n");
+            for i=1:length(mov)
+                fprintf("%s\n",mov{i});
+            end
+            fprintf("\n");
         case 2
+
             similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
             likelyUsers = zeros(1,2);
             likelyUsers(1,1) = similarities(1, length(similarities));
@@ -35,8 +41,10 @@ while option ~= 5
             end
             answer
         case 3
-            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,100);
             evaluatedMovies = data.C{id};
+            moviesX = data.moviesGenreSignaturesMatrix(:,evaluatedMovies);
+            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,data.moviesGenreSignaturesMatrix,175);
+            
             %get [row number, collumn number] of the elements that have
             %distance < 0.8
             [id1, id2, ~] = find(genreDistance < 0.8 & genreDistance > 0);
@@ -73,14 +81,14 @@ while option ~= 5
             for i=1:length(toRecommend)
                 disp(data.dic{toRecommend(i),1});
             end
-            fprintf("\n");     
+            fprintf("\n");    
         case 4
             search = input("Enter your search: ", "s");
             similarities = cell(1,length(data.dic));
             for i = 1:length(data.dic)
                 str1 = lower(search);
                 str2 = lower(data.dic{i});
-                shingle_size = 2;
+                shingle_size = 5;
                 nhf = 10;
                 nbits = 1000;
                 similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
