@@ -1,6 +1,7 @@
-str1 = 'Borboleta';
-str2 = 'tyborboletaetaupl';
-shingle_size = 3;
-nhf = 4;
-nbits = 100
-similarity = minhash(str1, str2, shingle_size, nhf, nbits)
+bf = BloomFilter(10, 3);
+for i = 1:1:129
+    i
+    bf = bf.insert('Madre');
+end
+bf
+bf.count('Madre')

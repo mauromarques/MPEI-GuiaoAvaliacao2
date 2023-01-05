@@ -42,12 +42,15 @@ classdef BloomFilter
         function minimum = count(obj, element)
             % Determines the multiplicity of an element using the "minimum selection" algorithm.
             str = element;
-            minimum = 100;
+            minimum = 0;
             for i = 1 : obj.k
                 str = [str num2str(i)];
                 hash = string2hash(str);
                 idx = mod(hash, obj.n) +1;
                 value = obj.bits(idx);
+                if i == 1
+                    minimum = value;
+                end
                 if value < minimum
                     minimum = value;
                 end
