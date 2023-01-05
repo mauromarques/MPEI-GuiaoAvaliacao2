@@ -75,7 +75,22 @@ while option ~= 5
             end
             fprintf("\n");     
         case 4
-            moviesFeedback(dic, bloomFilter)
+            search = input("Enter your search: ", "s");
+            similarities = cell(1,length(data.dic));
+            for i = 1:length(data.dic)
+                str1 = lower(search);
+                str2 = lower(data.dic{i});
+                shingle_size = 2;
+                nhf = 10;
+                nbits = 1000;
+                similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
+            end
+            [as,idx] = sort(cell2mat(similarities),'descend');
+            
+            for i = 1:5
+                disp(data.dic{idx(i)})
+                disp(data.bloomFilter.count(idx(i)))
+            end
     end
 end
 

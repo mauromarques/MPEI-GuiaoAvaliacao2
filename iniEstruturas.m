@@ -19,15 +19,16 @@ moviesName = dic(:,1);
 
 nhf = 100;
 
-%udata2 = load("u.data");
-%u2 = udata2(1:end, 2:3); clear udata;
-bloomFilter = BloomFilter(10000,nhf);
-%u2 = u2(i,2) >= 3;
-%for i = 1:length(ratings)
-    %trocar a hash func usada no bloom filter ou meter
-    %a string2hash no repo
-    %bloomFilter.insert(ratings(i))
-%end
+udata2 = load("u.data");
+u2 = udata2(1:end, 2:3); clear udata;
+bloomFilter = BloomFilter(100000,nhf);
+u2 = u2(u2(:,2) >= 3,:);
+u2 = u2(:,1);
+dlmwrite('matrix.txt', u2, 'delimiter', '\n', 'precision', 4);
+for i = 1:length(u2)
+    bloomFilter = bloomFilter.insert(u2(i));
+    i
+end
 
 N = 100000;
 hf = initHashFuncs(N,nhf);
@@ -35,6 +36,6 @@ hf = initHashFuncs(N,nhf);
 
 moviesGenreSignaturesMatrix = calculateSignaturesMatrix(moviesGenre,hf,nhf);
 moviesNameSignaturesMatrix = calculateSignaturesMatrix(moviesName,hf,nhf);
-userMoviesSignaturesMatrix = calculateSignaturesMatrix(C,hf,nhf)
+userMoviesSignaturesMatrix = calculateSignaturesMatrix(C,hf,nhf);
 
 save data.mat userMoviesSignaturesMatrix moviesGenreSignaturesMatrix bloomFilter C dic moviesNameSignaturesMatrix
