@@ -77,7 +77,8 @@ while option ~= 5
                 u = ut(c == m);
                 toRecommend = [toRecommend u(1)];
             end
-
+            % prevent more than 2 recommendations
+            toRecommend = toRecommend(1:2);
             %print the name of the movies to recommend
             toRecommend = toRecommend(1:2);
             fprintf("\nMovies you might like:\n")

@@ -1,17 +1,15 @@
-function M = calculateSignaturesMatrix(Conjuntos,v,nhf)
+function M = calculateSignaturesMatrix(Conjuntos,hf,nhf)
     nc = length(Conjuntos);
     M = zeros(nhf,nc);
-    %h = waitbar(0,"Calculando as assinaturas (MinHash)");
 
     for nu=1:nc
-        %waitbar(nu/nc,h);
         C = Conjuntos{nu};
 
         for nh=1:nhf
-            M(nh,nu) = mod(v.a(nh) * C(1) + v.b(nh),v.p);
+            M(nh,nu) = mod(hf.a(nh) * C(1) + hf.b(nh),hf.p);
 
             for nf=2:length(C)
-                htmp = mod(v.a(nh) * (C(nf)) + v.b(nh),v.p);
+                htmp = mod(hf.a(nh) * (C(nf)) + hf.b(nh),hf.p);
                 if htmp < M(nh,nu)
                     M(nh,nu) = htmp;
                 end

@@ -9,5 +9,4 @@ function hf= initHashFuncs(m,nhf)
     hf.p = pp;
     hf.a = randi([1, (pp - 1)],1,nhf);
     hf.b = randi([0, (pp-1)],1,nhf);
-    hf.c = randi([1,(pp-1)],1,nhf);
 end

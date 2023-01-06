@@ -1,15 +1,8 @@
-%clear all;
-%strings1 = {{"Animation","Children's","Comedy"} {"Comedy","Animation","Children's","Crime","Thriller","Horror"}};
-%nhf = 10;
-%hf = initHashFuncs(100000,nhf);
-%c = calculateStringSignaturesMatrix(strings1,hf,nhf);
-%simJ = sum(c(:,1) == c(:,2)) / nhf;
-%distance = 1 - simJ;
-%fprintf("\nDistancia: %.2f\n",distance);
-
 function minhash = calculateStringSignaturesMatrix(strings,hf,nhf)
     minhash = zeros(nhf,length(strings));  
     for i=1:length(strings)
+        % strings is a cell array of cell arrays
+        % ex: {{"Animation","Children's","Comedy"} {"Comedy","Animation","Children's","Crime","Thriller","Horror"}}
         st = strings(i,:);
         for nh=1:nhf
             s = double(cell2mat(st(1)));
