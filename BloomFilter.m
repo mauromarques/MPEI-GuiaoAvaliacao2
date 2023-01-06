@@ -4,7 +4,6 @@ classdef BloomFilter
         k=0
         bits=[]
         nElements=0
-        h
     end
     methods
 
@@ -13,90 +12,49 @@ classdef BloomFilter
             obj.n = nInput;
             obj.k = kInput;
             obj.bits = zeros(1, nInput);
-            obj.h = initBloomFilterHF(nInput);
         end
         
         % INSERT -----------------------
         function obj = insert(obj, toInsert)
-            n = length(obj.bits);
-            key = toInsert;
-            for i=1:obj.k
-                key = [key num2str(i)];
-                pos = obj.hash(key);
-                obj.bits(pos) = obj.bits(pos) + 1;
+            str = toInsert;
+            for i = 1 : obj.k
+                str = [str num2str(i)];
+                hash = string2hash(str);
+                idx = mod(hash, obj.n) +1;
+                obj.bits(idx) = obj.bits(idx) + 1;
             end
             obj.nElements = obj.nElements + 1;
-            %str = toInsert;
-            %for i = 1 : obj.k
-            %    str = [str num2str(i)];
-            %    hash = string2hash(str);
-            %    idx = mod(hash, obj.n) +1;
-            %    obj.bits(idx) = obj.bits(idx) + 1;
-            %end
-            %obj.nElements = obj.nElements + 1;
-        end
-
-        function hk = hash(obj,key)
-            ll = length(key);
-            key = double(key) - 47;
-            hk = key(1);
-            for i=2:ll
-                hk = mod(obj.h.c * hk + key(i),obj.h.p);
-            end
-            hk = mod(mod(obj.h.a * hk + obj.h.b,obj.h.p),length(obj.bits)) + 1;
         end
 
         % EXISTS -----------------------
         function returnValue = exists(obj, toCheck)
-            pos = zeros(1,obj.k);
-            key = toCheck;
-
-            for i=1:obj.k
-                key = [key num2str(i)];
-                pos(i) = hash(key);
+            returnValue = True;
+            str = toCheck;
+            for i = 1:obj.k
+                str = [str num2str(i)];
+                hash = string2hash(str);
+                idx = mod(hash, obj.n) +1;
+                returnValue = (obj.bits(idx) > 0) && returnValue;
             end
-            if all(obj.bits(pos) > 0)
-                returnValue = 1;
-            else
-                returnValue = 0;
-            end
-            %returnValue = True;
-            %str = toCheck;
-            %for i = 1:obj.k
-            %    str = [str num2str(i)];
-            %    hash = string2hash(str);
-            %    idx = mod(hash, obj.n) +1;
-            %    returnValue = (obj.bits(idx) > 0) && returnValue;
-            %end
         end
         
         % COUNT -------------------------
         function minimum = count(obj, element)
             % Determines the multiplicity of an element using the "minimum selection" algorithm.
-            n = length(obj.bits);
-            pos = zeros(1,obj.k);
-            key = element;
-
-            for i=1:obj.k
-                key = [key num2str(i)];
-                pos(i) = hash(key);
+            str = element;
+            minimum = 0;
+            for i = 1 : obj.k
+                str = [str num2str(i)];
+                hash = string2hash(str);
+                idx = mod(hash, obj.n) +1;
+                value = obj.bits(idx);
+                if i == 1
+                    minimum = value;
+                end
+                if value < minimum
+                    minimum = value;
+                end
             end
-
-            minimum = min(obj.bits(pos));
-            %str = element;
-            %minimum = 0;
-            %for i = 1 : obj.k
-            %    str = [str num2str(i)];
-            %    hash = string2hash(str);
-            %    idx = mod(hash, obj.n) +1;
-            %    value = obj.bits(idx);
-            %    if i == 1
-            %        minimum = value;
-            %    end
-            %    if value < minimum
-            %        minimum = value;
-            %    end
-            %end
         end
     end
 end

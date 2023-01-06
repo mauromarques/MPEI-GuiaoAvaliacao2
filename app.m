@@ -43,7 +43,7 @@ while option ~= 5
             fprintf("\n");
             
         case 3
-            evaluatedMovies = [1 95 71];
+            evaluatedMovies = data.C{id};
             t = [];
             g = [];
             for i=1:length(evaluatedMovies)
@@ -84,7 +84,7 @@ while option ~= 5
             for i = 1:length(data.dic)
                 str1 = lower(search);
                 str2 = lower(data.dic{i});
-                shingle_size = 5;
+                shingle_size = 2;
                 nhf = 10;
                 nbits = 1000;
                 similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
