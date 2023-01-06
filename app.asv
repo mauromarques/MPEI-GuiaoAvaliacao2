@@ -17,7 +17,12 @@ while option ~= 5
 
     switch option
         case 1
-            movies(id, data.C, data.dic)
+            mov = movies(id, data.C, data.dic);
+            fprintf("\nMovies you watched:\n");
+            for i=1:length(mov)
+                fprintf("%s\n",mov{i});
+            end
+            fprintf("\n");
         case 2
             similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
             likelyUsers = zeros(1,2);
@@ -27,17 +32,25 @@ while option ~= 5
             movies2 = cell2mat(data.C(likelyUsers(1,2)));
             movies3 = cell2mat(data.C(id));
             moviesToReccommend = unique(cat(1, movies2, movies1));
-            moviesToReccommend = setdiff(movies3, moviesToReccommend);
+            [~,ids1,~] = intersect(moviesToReccommend,movies3);
+            moviesToReccommend(ids1,:) = [];
+            %moviesToReccommend = setdiff(movies3, moviesToReccommend);
             answer = cell(1,length(moviesToReccommend));
+            fprintf("\nMovies you might like:\n");
             for i = 1:length(moviesToReccommend)
-                name = data.dic{moviesToReccommend(i)};
-                answer{i} = name;
+                fprintf("%s\n",data.dic{moviesToReccommend(i)});
             end
-            answer
+            fprintf("\n");
+            
         case 3
             evaluatedMovies = data.C{id};
+            simil = [];
+
+            for i=1:length(evaluatedMovies)
+                simil(i) = jaccardSimillarity(data.)
+            end
             moviesX = data.moviesGenreSignaturesMatrix(:,evaluatedMovies);
-            genreDistance = jaccardDistance(movies,data.moviesGenreSignaturesMatrix,175);
+            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,data.moviesGenreSignaturesMatrix,175);
             
             %get [row number, collumn number] of the elements that have
             %distance < 0.8
@@ -75,9 +88,24 @@ while option ~= 5
             for i=1:length(toRecommend)
                 disp(data.dic{toRecommend(i),1});
             end
-            fprintf("\n");     
+            fprintf("\n");    
         case 4
-            moviesFeedback(dic, bloomFilter)
+            search = input("Enter your search: ", "s");
+            similarities = cell(1,length(data.dic));
+            for i = 1:length(data.dic)
+                str1 = lower(search);
+                str2 = lower(data.dic{i});
+                shingle_size = 5;
+                nhf = 10;
+                nbits = 1000;
+                similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
+            end
+            [as,idx] = sort(cell2mat(similarities),'descend');
+            
+            for i = 1:5
+                disp(data.dic{idx(i)})
+                disp(data.bloomFilter.count(idx(i)))
+            end
     end
 end
 

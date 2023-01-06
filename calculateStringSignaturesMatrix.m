@@ -14,7 +14,6 @@ function minhash = calculateStringSignaturesMatrix(strings,hf,nhf)
         for nh=1:nhf
             s = double(cell2mat(st(1)));
             minhash(nh,i) = mod(hf.a(nh) * sum(s) + hf.b(nh),hf.p);
-            %m_min = hash(s,hf.a(nh),hf(nh).b,hf.p);
             for nf=2:length(st)
                 %ignore missing cells
                 if ismissing(st{nf})

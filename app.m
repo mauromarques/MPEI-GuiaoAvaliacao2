@@ -24,7 +24,6 @@ while option ~= 5
             end
             fprintf("\n");
         case 2
-
             similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
             likelyUsers = zeros(1,2);
             likelyUsers(1,1) = similarities(1, length(similarities));
@@ -33,46 +32,43 @@ while option ~= 5
             movies2 = cell2mat(data.C(likelyUsers(1,2)));
             movies3 = cell2mat(data.C(id));
             moviesToReccommend = unique(cat(1, movies2, movies1));
-            moviesToReccommend = setdiff(movies3, moviesToReccommend);
+            [~,ids1,~] = intersect(moviesToReccommend,movies3);
+            moviesToReccommend(ids1,:) = [];
+            %moviesToReccommend = setdiff(movies3, moviesToReccommend);
             answer = cell(1,length(moviesToReccommend));
+            fprintf("\nMovies you might like:\n");
             for i = 1:length(moviesToReccommend)
-                name = data.dic{moviesToReccommend(i)};
-                answer{i} = name;
+                fprintf("%s\n",data.dic{moviesToReccommend(i)});
             end
-            answer
+            fprintf("\n");
+            
         case 3
             evaluatedMovies = data.C{id};
-            moviesX = data.moviesGenreSignaturesMatrix(:,evaluatedMovies);
-            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,data.moviesGenreSignaturesMatrix,175);
+            t = [];
+            g = [];
+            for i=1:length(evaluatedMovies)
+                simil = jaccardSimillarity(data.moviesGenreSignaturesMatrix,evaluatedMovies(i));
+                [~,col,~] = find(simil < 0.8 & simil > 0);
+                g(i) = length(col);
+                t = [t simil(:,col)];
+            end
+
+            [~,col,col2] = intersect(t(1,:),evaluatedMovies);
+            t(:,col) = [];
             
-            %get [row number, collumn number] of the elements that have
-            %distance < 0.8
-            [id1, id2, ~] = find(genreDistance < 0.8 & genreDistance > 0);
-            %concatenate them in a single matrix (easier to use)
-            t = [id1 id2];
-            %first collumn of t should be the movies already watched by the
-            %user
-            [~,id1,~] = intersect(t(:,1),evaluatedMovies);
-            %remove the lines that contain movies (in collumn 1) that the 
-            %user hasnt watched
-            t = t(id1,:);
-            %second collumn should only have movies the user hasnt watched
-            [~,id2,~] = intersect(t(:,2),evaluatedMovies);
-            %remove the lines that contain movies that the user has watched
-            t(id2,:) = [];
-            
-            ut = unique(t(:,2));
+            ut = unique(t(1,:));
 
             %how many times each element appears in t
-            c = histcounts(t(:,2),ut);
-            clear id1 id2 t
+            c = histcounts(t(1,:),ut);
+            
             %save the id of the movie(s) that appear most often
             m = max(c);
             toRecommend = ut(c == m);
             if length(toRecommend) == 1
                 c(c == m) = 0;
                 m = max(c);
-                toRecommend = [toRecommend ut(c == m)];
+                u = ut(c == m);
+                toRecommend = [toRecommend u(1)];
             end
 
             %print the name of the movies to recommend
