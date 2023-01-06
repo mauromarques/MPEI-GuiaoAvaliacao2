@@ -17,10 +17,10 @@ while option ~= 5
 
     switch option
         case 1
-            mov = movies(id, data.C, data.dic);
+            watchedMovies = data.C{id};
             fprintf("\nMovies you watched:\n");
-            for i=1:length(mov)
-                fprintf("%s\n",mov{i});
+            for i=1:length(watchedMovies)
+                fprintf("%s\n",data.dic{i});
             end
             fprintf("\n");
         case 2
