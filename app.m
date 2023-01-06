@@ -24,18 +24,25 @@ while option ~= 5
             end
             fprintf("\n");
         case 2
+            % similarities between the current user and all the other users
+            % in crescent order
             similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
+            % The two most likely users
             likelyUsers = zeros(1,2);
             likelyUsers(1,1) = similarities(1, length(similarities));
             likelyUsers(1,2) = similarities(1, length(similarities)-1);
+            %The movies seen by the 2 most likely users 
             movies1 = cell2mat(data.C(likelyUsers(1,1)));
             movies2 = cell2mat(data.C(likelyUsers(1,2)));
+            %The movies seem by the current user
             movies3 = cell2mat(data.C(id));
+            % Movies seem by at least one of the two likely users AND that
+            % havent been seen by the current user
             moviesToReccommend = unique(cat(1, movies2, movies1));
             [~,ids1,~] = intersect(moviesToReccommend,movies3);
             moviesToReccommend(ids1,:) = [];
-            %moviesToReccommend = setdiff(movies3, moviesToReccommend);
             answer = cell(1,length(moviesToReccommend));
+            % Print reccommendations
             fprintf("\nMovies you might like:\n");
             for i = 1:length(moviesToReccommend)
                 fprintf("%s\n",data.dic{moviesToReccommend(i)});
@@ -79,18 +86,30 @@ while option ~= 5
             end
             fprintf("\n");    
         case 4
+            % The search text
             search = input("Enter your search: ", "s");
+            % Cell array to store similarities
             similarities = cell(1,length(data.dic));
+            % For each movie title, compare with the search text and
+            % populate the similarities cell array.
             for i = 1:length(data.dic)
                 str1 = lower(search);
                 str2 = lower(data.dic{i});
-                shingle_size = 2;
+                % Shingle size
+                shingle_size = 3;
+                % Number of hash functions
                 nhf = 10;
+                % Number of counters in counting bloom filter
                 nbits = 1000;
+                % Add the result of the similarity  to the cell array
                 similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
             end
+            % transform the cell array into an array and sort it in
+            % descending order
             [as,idx] = sort(cell2mat(similarities),'descend');
-            
+            % Show the 5 results with a bigger similarity and uses the
+            % bloom filter to count the number of reviews above 3 that the
+            % movie has.
             for i = 1:5
                 disp(data.dic{idx(i)})
                 disp(data.bloomFilter.count(idx(i)))
