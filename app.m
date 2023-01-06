@@ -43,12 +43,12 @@ while option ~= 5
             fprintf("\n");
             
         case 3
-            evaluatedMovies = data.C{id};
+            evaluatedMovies = [1 95 71];
             t = [];
             g = [];
             for i=1:length(evaluatedMovies)
                 simil = jaccardSimillarity(data.moviesGenreSignaturesMatrix,evaluatedMovies(i));
-                [~,col,~] = find(simil < 0.8 & simil > 0);
+                [~,col,~] = find(simil(2,:) > 0.2);
                 g(i) = length(col);
                 t = [t simil(:,col)];
             end
