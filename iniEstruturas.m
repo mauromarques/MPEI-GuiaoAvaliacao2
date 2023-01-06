@@ -1,7 +1,6 @@
 clear all;
 udata = load("u.data");
 u = udata(1:end, 1:2); 
-ratings = udata(udata(:,3) >= 3,2);
 clear udata;
 %utilizadores
 utiliz = unique(u(:,1));
@@ -17,11 +16,13 @@ dic = readcell("films.txt","Delimiter","\t");
 moviesGenre = dic(:,2:end);
 moviesName = dic(:,1);
 
+% Number of hash functions for bloom filter
 nhf = 100;
-
+% Loads movies data again
 udata2 = load("u.data");
 u2 = udata2(1:end, 2:3); clear udata;
 bloomFilter = BloomFilter(100000,nhf);
+% Stores every review >= 3 in bloom filter
 u2 = u2(u2(:,2) >= 3,1);
 dlmwrite('matrix.txt', u2, 'delimiter', '\n', 'precision', 4);
 for i = 1:length(u2)
@@ -30,7 +31,6 @@ end
 
 N = 100000;
 hf = initHashFuncs(N,nhf);
-
 
 moviesGenreSignaturesMatrix = calculateStringSignaturesMatrix(moviesGenre,hf,nhf);
 moviesNameSignaturesMatrix = calculateStringSignaturesMatrix(moviesName,hf,nhf);

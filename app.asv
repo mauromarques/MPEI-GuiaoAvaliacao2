@@ -24,18 +24,25 @@ while option ~= 5
             end
             fprintf("\n");
         case 2
+            % similarities between the current user and all the other users
+            % in crescent order
             similarities = jaccardSimillarity(data.userMoviesSignaturesMatrix, id);
+            % The two most likely users
             likelyUsers = zeros(1,2);
             likelyUsers(1,1) = similarities(1, length(similarities));
             likelyUsers(1,2) = similarities(1, length(similarities)-1);
+            %The movies seen by the 2 most likely users 
             movies1 = cell2mat(data.C(likelyUsers(1,1)));
             movies2 = cell2mat(data.C(likelyUsers(1,2)));
+            %The movies seem by the current user
             movies3 = cell2mat(data.C(id));
+            % Movies seem by at least one of the two likely users AND that
+            % havent been seen by the current user
             moviesToReccommend = unique(cat(1, movies2, movies1));
             [~,ids1,~] = intersect(moviesToReccommend,movies3);
             moviesToReccommend(ids1,:) = [];
-            %moviesToReccommend = setdiff(movies3, moviesToReccommend);
             answer = cell(1,length(moviesToReccommend));
+            % Print reccommendations
             fprintf("\nMovies you might like:\n");
             for i = 1:length(moviesToReccommend)
                 fprintf("%s\n",data.dic{moviesToReccommend(i)});
@@ -44,42 +51,31 @@ while option ~= 5
             
         case 3
             evaluatedMovies = data.C{id};
-            simil = [];
-
+            t = [];
+            g = [];
             for i=1:length(evaluatedMovies)
-                simil(i) = jaccardSimillarity(data.)
+                simil = jaccardSimillarity(data.moviesGenreSignaturesMatrix,evaluatedMovies(i));
+                [~,col,~] = find(simil < 0.8 & simil > 0);
+                g(i) = length(col);
+                t = [t simil(:,col)];
             end
-            moviesX = data.moviesGenreSignaturesMatrix(:,evaluatedMovies);
-            genreDistance = jaccardDistance(data.moviesGenreSignaturesMatrix,data.moviesGenreSignaturesMatrix,175);
+
+            [~,col,col2] = intersect(t(1,:),evaluatedMovies);
+            t(:,col) = [];
             
-            %get [row number, collumn number] of the elements that have
-            %distance < 0.8
-            [id1, id2, ~] = find(genreDistance < 0.8 & genreDistance > 0);
-            %concatenate them in a single matrix (easier to use)
-            t = [id1 id2];
-            %first collumn of t should be the movies already watched by the
-            %user
-            [~,id1,~] = intersect(t(:,1),evaluatedMovies);
-            %remove the lines that contain movies (in collumn 1) that the 
-            %user hasnt watched
-            t = t(id1,:);
-            %second collumn should only have movies the user hasnt watched
-            [~,id2,~] = intersect(t(:,2),evaluatedMovies);
-            %remove the lines that contain movies that the user has watched
-            t(id2,:) = [];
-            
-            ut = unique(t(:,2));
+            ut = unique(t(1,:));
 
             %how many times each element appears in t
-            c = histcounts(t(:,2),ut);
-            clear id1 id2 t
+            c = histcounts(t(1,:),ut);
+            
             %save the id of the movie(s) that appear most often
             m = max(c);
             toRecommend = ut(c == m);
             if length(toRecommend) == 1
                 c(c == m) = 0;
                 m = max(c);
-                toRecommend = [toRecommend ut(c == m)];
+                u = ut(c == m);
+                toRecommend = [toRecommend u(1)];
             end
 
             %print the name of the movies to recommend
@@ -90,18 +86,28 @@ while option ~= 5
             end
             fprintf("\n");    
         case 4
+            % The search text
             search = input("Enter your search: ", "s");
+            % Cell array to store similarities
             similarities = cell(1,length(data.dic));
+            % For each movie title, compare with the search text and
+            % populate the similarities cell array.
             for i = 1:length(data.dic)
                 str1 = lower(search);
                 str2 = lower(data.dic{i});
-                shingle_size = 5;
+                % Shingle size
+                shingle_size = 3;
+                % Number of hash functions
                 nhf = 10;
+                % Number of counters in counting bloom filter
                 nbits = 1000;
+                % Add the result of the similarity  to the cell array
                 similarities{i} = minhash(str1, str2, shingle_size, nhf, nbits);
             end
+            % transform the cell array into an array and sort it in
+            % descending order
             [as,idx] = sort(cell2mat(similarities),'descend');
-            
+            % Show the 5 results with a bigger 
             for i = 1:5
                 disp(data.dic{idx(i)})
                 disp(data.bloomFilter.count(idx(i)))
