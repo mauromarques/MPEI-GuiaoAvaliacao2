@@ -21,7 +21,7 @@ nhf = 100;
 
 udata2 = load("u.data");
 u2 = udata2(1:end, 2:3); clear udata;
-bloomFilter = BloomFilter(100000,nhf);
+bloomFilter = BloomFilter(100000,5);
 u2 = u2(u2(:,2) >= 3,1);
 dlmwrite('matrix.txt', u2, 'delimiter', '\n', 'precision', 4);
 for i = 1:length(u2)
@@ -36,4 +36,4 @@ moviesGenreSignaturesMatrix = calculateStringSignaturesMatrix(moviesGenre,hf,nhf
 moviesNameSignaturesMatrix = calculateStringSignaturesMatrix(moviesName,hf,nhf);
 userMoviesSignaturesMatrix = calculateSignaturesMatrix(C,hf,nhf);
 
-save data.mat userMoviesSignaturesMatrix moviesGenreSignaturesMatrix bloomFilter C dic moviesNameSignaturesMatrix
+save data.mat userMoviesSignaturesMatrix moviesGenreSignaturesMatrix utiliz bloomFilter C dic moviesNameSignaturesMatrix

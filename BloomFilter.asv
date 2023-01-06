@@ -43,60 +43,38 @@ classdef BloomFilter
             for i=2:ll
                 hk = mod(obj.h.c * hk + key(i),obj.h.p);
             end
-            hk = mod(mod(obj.h.a * hk + obj.h.b,obj.h.p),length(obj.bits)) + 1;
+            hk = mod(mod(obj.h.a * hk + obj.h.b,obj.h.p),length(obj.))
         end
 
         % EXISTS -----------------------
         function returnValue = exists(obj, toCheck)
-            pos = zeros(1,obj.k);
-            key = toCheck;
-
-            for i=1:obj.k
-                key = [key num2str(i)];
-                pos(i) = hash(key);
+            returnValue = True;
+            str = toCheck;
+            for i = 1:obj.k
+                str = [str num2str(i)];
+                hash = string2hash(str);
+                idx = mod(hash, obj.n) +1;
+                returnValue = (obj.bits(idx) > 0) && returnValue;
             end
-            if all(obj.bits(pos) > 0)
-                returnValue = 1;
-            else
-                returnValue = 0;
-            end
-            %returnValue = True;
-            %str = toCheck;
-            %for i = 1:obj.k
-            %    str = [str num2str(i)];
-            %    hash = string2hash(str);
-            %    idx = mod(hash, obj.n) +1;
-            %    returnValue = (obj.bits(idx) > 0) && returnValue;
-            %end
         end
         
         % COUNT -------------------------
         function minimum = count(obj, element)
             % Determines the multiplicity of an element using the "minimum selection" algorithm.
-            n = length(obj.bits);
-            pos = zeros(1,obj.k);
-            key = element;
-
-            for i=1:obj.k
-                key = [key num2str(i)];
-                pos(i) = hash(key);
+            str = element;
+            minimum = 0;
+            for i = 1 : obj.k
+                str = [str num2str(i)];
+                hash = string2hash(str);
+                idx = mod(hash, obj.n) +1;
+                value = obj.bits(idx);
+                if i == 1
+                    minimum = value;
+                end
+                if value < minimum
+                    minimum = value;
+                end
             end
-
-            minimum = min(obj.bits(pos));
-            %str = element;
-            %minimum = 0;
-            %for i = 1 : obj.k
-            %    str = [str num2str(i)];
-            %    hash = string2hash(str);
-            %    idx = mod(hash, obj.n) +1;
-            %    value = obj.bits(idx);
-            %    if i == 1
-            %        minimum = value;
-            %    end
-            %    if value < minimum
-            %        minimum = value;
-            %    end
-            %end
         end
     end
 end
